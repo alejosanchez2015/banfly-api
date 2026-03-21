@@ -35,9 +35,9 @@ public class ClientController {
         return ResponseEntity.ok(mapper.toResponse(client));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ClientResponse> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(mapper.toResponse(clientUseCase.findByID(id)));
+    @GetMapping("/{identificationNumber}")
+    public ResponseEntity<ClientResponse> findByIdentificationNumber(@PathVariable String identificationNumber) {
+        return ResponseEntity.ok(mapper.toResponse(clientUseCase.findByIdentificationNumber(identificationNumber)));
     }
 
     @GetMapping

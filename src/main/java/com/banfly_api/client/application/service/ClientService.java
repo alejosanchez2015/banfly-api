@@ -3,6 +3,7 @@ package com.banfly_api.client.application.service;
 import com.banfly_api.client.domain.core.ClientUseCase;
 import com.banfly_api.client.domain.exception.ClientHasProductsException;
 import com.banfly_api.client.domain.exception.ClientNotFoundException;
+import com.banfly_api.client.domain.exception.DuplicateEmailException;
 import com.banfly_api.client.domain.exception.UnderageClientException;
 import com.banfly_api.client.domain.model.Client;
 import com.banfly_api.client.domain.repository.ClientRepository;
@@ -29,23 +30,29 @@ public class ClientService implements ClientUseCase {
 
     @Override
     public Client update(Long id, Client updatedClient) {
-        Client client = clientRepository.findById(id)
+        Client existingClient = clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
 
-        client.setFirstName(updatedClient.getFirstName());
-        client.setFirstName(updatedClient.getLastName());
-        client.setEmail(updatedClient.getEmail());
-        client.setIdentificationType(updatedClient.getIdentificationType());
-        client.setIdentificationNumber(updatedClient.getIdentificationNumber());
-        client.setBirthDate(updatedClient.getBirthDate());
+        existingClient.setFirstName(updatedClient.getFirstName());
+        existingClient.setLastName(updatedClient.getLastName());
+        existingClient.setEmail(updatedClient.getEmail());
+        existingClient.setIdentificationType(updatedClient.getIdentificationType());
+        existingClient.setIdentificationNumber(updatedClient.getIdentificationNumber());
+        existingClient.setBirthDate(updatedClient.getBirthDate());
 
-        return clientRepository.save(client);
+        return clientRepository.save(existingClient);
     }
 
     @Override
     public Client findByID(Long id) {
         return clientRepository.findById(id)
                 .orElseThrow(() -> new ClientNotFoundException(id));
+    }
+
+    @Override
+    public Client findByIdentificationNumber(String identificationNumber) {
+        return clientRepository.findByIdentificationNumber(identificationNumber)
+                .orElseThrow(() -> new ClientNotFoundException(identificationNumber));
     }
 
     @Override
@@ -74,8 +81,7 @@ public class ClientService implements ClientUseCase {
 
     private void validateUniqueEmail(String email) {
         clientRepository.findByEmail(email).ifPresent(c -> {
-            throw new IllegalArgumentException(
-                    "There is already a registered customer with the email address: " + email);
+            throw new DuplicateEmailException(email);
         });
     }
 }

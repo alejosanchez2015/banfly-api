@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface ClientJpaRepository extends JpaRepository<ClientEntity, Long> {
 
+    Optional<ClientEntity> findByIdentificationNumber(String identificationNumber);
     Optional<ClientEntity> findByEmail(String email);
 
    // @Query("SELECT COUNT(p) > 0 FROM ProductEntity p WHERE p.client.id = :clientId")

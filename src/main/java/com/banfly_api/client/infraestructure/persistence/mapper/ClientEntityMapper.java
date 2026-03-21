@@ -30,6 +30,7 @@ public class ClientEntityMapper {
         entity.setLastName(domain.getLastName());
         entity.setEmail(domain.getEmail());
         entity.setBirthDate(domain.getBirthDate());
+        entity.setCreatedAt(domain.getCreatedAt());
         return entity;
     }
 

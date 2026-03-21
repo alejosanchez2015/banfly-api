@@ -37,6 +37,11 @@ public class ClientRepositoryImpl implements ClientRepository {
     }
 
     @Override
+    public Optional<Client> findByIdentificationNumber(String identificationNumber) {
+        return jpaRepository.findByIdentificationNumber(identificationNumber).map(mapper::toDomain);
+    }
+
+    @Override
     public boolean hasProducts(Long clientId) {
 
         // return jpaRepository.hasProducts(clientId);
