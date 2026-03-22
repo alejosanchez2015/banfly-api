@@ -6,7 +6,4 @@ public class ProductNotFoundException extends RuntimeException{
         super("Product with id " + id + " not found.");
     }
 
-    public ProductNotFoundException(String accountNumber) {
-        super("Product with account number " + accountNumber + " not found.");
-    }
 }

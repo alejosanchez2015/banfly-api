@@ -1,7 +1,6 @@
 package com.banfly.api.application.service;
 
 import com.banfly.api.domain.client.core.out.ClientRepository;
-import com.banfly.api.domain.client.exception.ClientNotFoundException;
 import com.banfly.api.domain.product.core.in.ProductUseCase;
 import com.banfly.api.domain.product.core.out.ProductRepository;
 import com.banfly.api.domain.product.exception.*;
@@ -117,12 +116,6 @@ public class ProductService implements ProductUseCase {
         if (product.getAccountType() == AccountType.AHORROS
                 && product.getBalance().compareTo(BigDecimal.ZERO) < 0) {
             throw new NegativeBalanceException();
-        }
-    }
-
-    public void validateAccountIsActive(Product product) {
-        if (product.getStatus() != AccountStatus.ACTIVA) {
-            throw new InactiveAccountException(product.getAccountNumber());
         }
     }
 

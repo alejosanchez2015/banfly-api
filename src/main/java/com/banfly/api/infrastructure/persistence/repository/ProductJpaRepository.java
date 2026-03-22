@@ -1,6 +1,5 @@
 package com.banfly.api.infrastructure.persistence.repository;
 
-import com.banfly.api.domain.product.model.Product;
 import com.banfly.api.infrastructure.persistence.entity.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
