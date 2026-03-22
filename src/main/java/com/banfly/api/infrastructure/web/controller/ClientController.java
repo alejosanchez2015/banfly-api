@@ -1,6 +1,6 @@
 package com.banfly.api.infrastructure.web.controller;
 
-import com.banfly.api.domain.client.core.ClientUseCase;
+import com.banfly.api.domain.client.core.in.ClientUseCase;
 import com.banfly.api.domain.client.model.Client;
 import com.banfly.api.infrastructure.web.dto.request.ClientRequest;
 import com.banfly.api.infrastructure.web.dto.response.ClientResponse;

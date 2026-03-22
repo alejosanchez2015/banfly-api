@@ -7,7 +7,7 @@ import com.banfly.api.domain.client.exception.DuplicateEmailException;
 import com.banfly.api.domain.client.exception.UnderageClientException;
 import com.banfly.api.domain.client.model.Client;
 import com.banfly.api.domain.client.model.IdentificationType;
-import com.banfly.api.domain.client.domain.repository.ClientRepository;
+import com.banfly.api.domain.client.core.out.ClientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,4 +1,4 @@
-package com.banfly.api.domain.client.core;
+package com.banfly.api.domain.client.core.in;
 
 import com.banfly.api.domain.client.model.Client;
 

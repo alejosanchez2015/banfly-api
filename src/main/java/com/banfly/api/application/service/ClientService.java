@@ -1,12 +1,12 @@
 package com.banfly.api.application.service;
 
-import com.banfly.api.domain.client.core.ClientUseCase;
+import com.banfly.api.domain.client.core.in.ClientUseCase;
 import com.banfly.api.domain.client.exception.ClientHasProductsException;
 import com.banfly.api.domain.client.exception.ClientNotFoundException;
 import com.banfly.api.domain.client.exception.DuplicateEmailException;
 import com.banfly.api.domain.client.exception.UnderageClientException;
 import com.banfly.api.domain.client.model.Client;
-import com.banfly.api.domain.client.domain.repository.ClientRepository;
+import com.banfly.api.domain.client.core.out.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

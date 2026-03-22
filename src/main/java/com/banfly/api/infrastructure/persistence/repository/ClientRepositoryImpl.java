@@ -1,7 +1,7 @@
 package com.banfly.api.infrastructure.persistence.repository;
 
 import com.banfly.api.domain.client.model.Client;
-import com.banfly.api.domain.client.domain.repository.ClientRepository;
+import com.banfly.api.domain.client.core.out.ClientRepository;
 import com.banfly.api.infrastructure.persistence.mapper.ClientEntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,43 +13,41 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClientRepositoryImpl implements ClientRepository {
 
-    private final ClientJpaRepository jpaRepository;
+    private final ClientJpaRepository ClientJpaRepository;
     private final ClientEntityMapper mapper;
 
     @Override
     public Client save(Client client) {
-        return mapper.toDomain(jpaRepository.save(mapper.toEntity(client)));
+        return mapper.toDomain(ClientJpaRepository.save(mapper.toEntity(client)));
     }
 
     @Override
     public Optional<Client> findById(Long id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+        return ClientJpaRepository.findById(id).map(mapper::toDomain);
     }
 
     @Override
     public Optional<Client> findByEmail(String email) {
-        return jpaRepository.findByEmail(email).map(mapper::toDomain);
+        return ClientJpaRepository.findByEmail(email).map(mapper::toDomain);
     }
 
     @Override
     public List<Client> findAll() {
-        return jpaRepository.findAll().stream().map(mapper::toDomain).toList();
+        return ClientJpaRepository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override
     public Optional<Client> findByIdentificationNumber(String identificationNumber) {
-        return jpaRepository.findByIdentificationNumber(identificationNumber).map(mapper::toDomain);
+        return ClientJpaRepository.findByIdentificationNumber(identificationNumber).map(mapper::toDomain);
     }
 
     @Override
     public boolean hasProducts(Long clientId) {
-
-        // return jpaRepository.hasProducts(clientId);
-        return false;
+        return ClientJpaRepository.hasProducts(clientId);
     }
 
     @Override
     public void delete(Long id) {
-        jpaRepository.deleteById(id);
+        ClientJpaRepository.deleteById(id);
     }
 }
