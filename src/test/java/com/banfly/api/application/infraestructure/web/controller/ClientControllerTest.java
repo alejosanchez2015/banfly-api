@@ -1,4 +1,4 @@
-package com.banfly.api.client.infraestructure.web.controller;
+package com.banfly.api.application.infraestructure.web.controller;
 
 import com.banfly.api.domain.client.core.in.ClientUseCase;
 import com.banfly.api.domain.client.exception.ClientHasProductsException;

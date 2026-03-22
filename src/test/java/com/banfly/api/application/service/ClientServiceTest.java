@@ -1,6 +1,5 @@
-package com.banfly.api.client.service;
+package com.banfly.api.application.service;
 
-import com.banfly.api.application.service.ClientService;
 import com.banfly.api.domain.client.exception.ClientHasProductsException;
 import com.banfly.api.domain.client.exception.ClientNotFoundException;
 import com.banfly.api.domain.client.exception.DuplicateEmailException;
