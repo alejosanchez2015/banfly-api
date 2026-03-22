@@ -1,13 +1,13 @@
 package com.banfly.api.client.service;
 
-import com.banfly.api.client.application.service.ClientService;
-import com.banfly.api.client.domain.exception.ClientHasProductsException;
-import com.banfly.api.client.domain.exception.ClientNotFoundException;
-import com.banfly.api.client.domain.exception.DuplicateEmailException;
-import com.banfly.api.client.domain.exception.UnderageClientException;
-import com.banfly.api.client.domain.model.Client;
-import com.banfly.api.client.domain.model.IdentificationType;
-import com.banfly.api.client.domain.repository.ClientRepository;
+import com.banfly.api.application.service.ClientService;
+import com.banfly.api.domain.client.exception.ClientHasProductsException;
+import com.banfly.api.domain.client.exception.ClientNotFoundException;
+import com.banfly.api.domain.client.exception.DuplicateEmailException;
+import com.banfly.api.domain.client.exception.UnderageClientException;
+import com.banfly.api.domain.client.model.Client;
+import com.banfly.api.domain.client.model.IdentificationType;
+import com.banfly.api.domain.client.domain.repository.ClientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

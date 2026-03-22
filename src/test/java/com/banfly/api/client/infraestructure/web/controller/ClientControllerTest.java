@@ -1,15 +1,16 @@
 package com.banfly.api.client.infraestructure.web.controller;
 
-import com.banfly.api.client.domain.core.ClientUseCase;
-import com.banfly.api.client.domain.exception.ClientHasProductsException;
-import com.banfly.api.client.domain.exception.ClientNotFoundException;
-import com.banfly.api.client.domain.exception.DuplicateEmailException;
-import com.banfly.api.client.domain.exception.UnderageClientException;
-import com.banfly.api.client.domain.model.Client;
-import com.banfly.api.client.domain.model.IdentificationType;
-import com.banfly.api.client.infraestructure.web.dto.request.ClientRequest;
-import com.banfly.api.client.infraestructure.web.dto.response.ClientResponse;
-import com.banfly.api.client.infraestructure.web.mapper.ClientDtoMapper;
+import com.banfly.api.domain.client.core.ClientUseCase;
+import com.banfly.api.domain.client.exception.ClientHasProductsException;
+import com.banfly.api.domain.client.exception.ClientNotFoundException;
+import com.banfly.api.domain.client.exception.DuplicateEmailException;
+import com.banfly.api.domain.client.exception.UnderageClientException;
+import com.banfly.api.domain.client.model.Client;
+import com.banfly.api.domain.client.model.IdentificationType;
+import com.banfly.api.infrastructure.web.controller.ClientController;
+import com.banfly.api.infrastructure.web.dto.request.ClientRequest;
+import com.banfly.api.infrastructure.web.dto.response.ClientResponse;
+import com.banfly.api.infrastructure.web.mapper.ClientDtoMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
