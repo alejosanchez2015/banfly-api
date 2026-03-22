@@ -1,0 +1,628 @@
+openapi: 3.0.1
+info:
+  title: Banfly API
+  description: "REST API for financial client, product and transaction management."
+  contact:
+    name: Banfly Team
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: Clients
+  description: Client management endpoints
+- name: Products
+  description: Product (accounts) management endpoints
+- name: Transactions
+  description: Financial transaction endpoints
+paths:
+  /api/v1/clients/{id}:
+    put:
+      tags:
+      - Clients
+      summary: Update an existing client
+      operationId: update
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientRequest"
+        required: true
+      responses:
+        "404":
+          description: Client not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "400":
+          description: Invalid request data
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "200":
+          description: Client updated successfully
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+    delete:
+      tags:
+      - Clients
+      summary: Delete a client
+      operationId: delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "409":
+          description: Client has linked products
+        "404":
+          description: Client not found
+        "204":
+          description: Client deleted successfully
+  /api/v1/transactions/withdrawal:
+    post:
+      tags:
+      - Transactions
+      summary: Process a withdrawal
+      operationId: withdrawal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WithdrawalRequest"
+        required: true
+      responses:
+        "404":
+          description: Account not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "201":
+          description: Withdrawal processed successfully
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "400":
+          description: Invalid request data
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "422":
+          description: Insufficient balance or inactive account
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+  /api/v1/transactions/transfer:
+    post:
+      tags:
+      - Transactions
+      summary: Process a transfer between accounts
+      operationId: transfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferRequest"
+        required: true
+      responses:
+        "404":
+          description: Account not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "422":
+          description: "Insufficient balance, inactive account or same account transfer"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "400":
+          description: Invalid request data
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "201":
+          description: Transfer processed successfully
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+  /api/v1/transactions/deposit:
+    post:
+      tags:
+      - Transactions
+      summary: Process a deposit
+      operationId: deposit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DepositRequest"
+        required: true
+      responses:
+        "404":
+          description: Account not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "201":
+          description: Deposit processed successfully
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "400":
+          description: Invalid request data
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "422":
+          description: Account is not active
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+  /api/v1/products:
+    post:
+      tags:
+      - Products
+      summary: Create a new product
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductRequest"
+        required: true
+      responses:
+        "404":
+          description: Client not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Invalid request data
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "201":
+          description: Product created successfully
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "422":
+          description: Negative balance for savings account
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+  /api/v1/clients:
+    get:
+      tags:
+      - Clients
+      summary: Get all clients
+      operationId: findAll
+      responses:
+        "200":
+          description: List of clients
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClientResponse"
+    post:
+      tags:
+      - Clients
+      summary: Create a new client
+      operationId: create_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientRequest"
+        required: true
+      responses:
+        "201":
+          description: Client created successfully
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "409":
+          description: Email already exists
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "422":
+          description: Underage client
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "400":
+          description: Invalid request data
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+  /api/v1/products/{id}/status:
+    patch:
+      tags:
+      - Products
+      summary: Update product status
+      operationId: updateStatus
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductStatusRequest"
+        required: true
+      responses:
+        "200":
+          description: Status updated successfully
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "422":
+          description: Invalid status transition
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Product not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+  /api/v1/transactions/account/{accountId}:
+    get:
+      tags:
+      - Transactions
+      summary: Get transactions by account id
+      operationId: findByAccountId
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: List of transactions
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionResponse"
+        "404":
+          description: Account not found
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionResponse"
+  /api/v1/products/{id}:
+    get:
+      tags:
+      - Products
+      summary: Find product by id
+      operationId: findById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: Product found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "404":
+          description: Product not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+  /api/v1/products/client/{clientId}:
+    get:
+      tags:
+      - Products
+      summary: Find products by client id
+      operationId: findByClientId
+      parameters:
+      - name: clientId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "404":
+          description: Client not found
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductResponse"
+        "200":
+          description: List of products
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductResponse"
+  /api/v1/clients/{identificationNumber}:
+    get:
+      tags:
+      - Clients
+      summary: Find client by identification number
+      operationId: findByIdentificationNumber
+      parameters:
+      - name: identificationNumber
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Client found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+        "404":
+          description: Client not found
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientResponse"
+components:
+  schemas:
+    ClientRequest:
+      required:
+      - birthDate
+      - email
+      - firstName
+      - identificationNumber
+      - identificationType
+      - lastName
+      type: object
+      properties:
+        identificationType:
+          type: string
+          enum:
+          - CC
+          - CE
+          - NIT
+          - PP
+        identificationNumber:
+          type: string
+        firstName:
+          maxLength: 2147483647
+          minLength: 2
+          type: string
+        lastName:
+          maxLength: 2147483647
+          minLength: 2
+          type: string
+        email:
+          type: string
+        birthDate:
+          type: string
+          format: date
+    ClientResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        identificationType:
+          type: string
+          enum:
+          - CC
+          - CE
+          - NIT
+          - PP
+        identificationNumber:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    WithdrawalRequest:
+      required:
+      - amount
+      - sourceAccountId
+      type: object
+      properties:
+        sourceAccountId:
+          type: integer
+          format: int64
+        amount:
+          minimum: 0.01
+          exclusiveMinimum: false
+          type: number
+        description:
+          type: string
+    TransactionResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        transactionType:
+          type: string
+          enum:
+          - DEPOSIT
+          - WITHDRAWAL
+          - TRANSFER
+        amount:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        sourceAccountId:
+          type: integer
+          format: int64
+        targetAccountId:
+          type: integer
+          format: int64
+        description:
+          type: string
+    TransferRequest:
+      required:
+      - amount
+      - sourceAccountId
+      - targetAccountId
+      type: object
+      properties:
+        sourceAccountId:
+          type: integer
+          format: int64
+        targetAccountId:
+          type: integer
+          format: int64
+        amount:
+          minimum: 0.01
+          exclusiveMinimum: false
+          type: number
+        description:
+          type: string
+    DepositRequest:
+      required:
+      - amount
+      - targetAccountId
+      type: object
+      properties:
+        targetAccountId:
+          type: integer
+          format: int64
+        amount:
+          minimum: 0.01
+          exclusiveMinimum: false
+          type: number
+        description:
+          type: string
+    ProductRequest:
+      required:
+      - accountType
+      - balance
+      - clientId
+      - gmfExempt
+      type: object
+      properties:
+        accountType:
+          type: string
+          enum:
+          - CORRIENTE
+          - AHORROS
+        clientId:
+          type: integer
+          format: int64
+        gmfExempt:
+          type: boolean
+        balance:
+          minimum: 0.0
+          exclusiveMinimum: false
+          type: number
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        accountType:
+          type: string
+          enum:
+          - CORRIENTE
+          - AHORROS
+        accountNumber:
+          type: string
+        status:
+          type: string
+          enum:
+          - ACTIVA
+          - INACTIVA
+          - CANCELADA
+        balance:
+          type: number
+        availableBalance:
+          type: number
+        gmfExempt:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        clientId:
+          type: integer
+          format: int64
+    UpdateProductStatusRequest:
+      required:
+      - status
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - ACTIVA
+          - INACTIVA
+          - CANCELADA
