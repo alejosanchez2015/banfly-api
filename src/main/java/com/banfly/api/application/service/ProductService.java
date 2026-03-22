@@ -9,6 +9,7 @@ import com.banfly.api.domain.product.model.AccountStatus;
 import com.banfly.api.domain.product.model.AccountType;
 import com.banfly.api.domain.product.model.Product;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,49 +17,75 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService implements ProductUseCase {
+
+    private static final String PRODUCT_NOT_FOUND = "Product not found with id: {}";
 
     private final ProductRepository productRepository;
     private final ClientRepository clientRepository;
 
     @Override
     public Product create(Product product) {
+        log.info("Creating product. AccountType: {}, clientId: {}",
+                product.getAccountType(), product.getClientId());
+
         validateClientExists(product.getClientId());
         validateInitialBalance(product);
         product.setAccountNumber(generateAccountNumber(product.getAccountType()));
         product.setStatus(AccountStatus.ACTIVA);
-        return productRepository.save(product);
+        Product productSaved = productRepository.save(product);
+        log.info("Product created successfully. AccountNumber: {}", productSaved.getAccountNumber());
+        return productSaved;
+
     }
 
     @Override
     public Product updateStatus(Long id, AccountStatus newStatus) {
+        log.info("Updating product status. Id: {}, newStatus: {}", id, newStatus);
         Product existing = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+                .orElseThrow(() -> {
+                    log.error(PRODUCT_NOT_FOUND, id);
+                    return new ProductNotFoundException(id);
+                });
 
         validateStatusTransition(existing, newStatus);
         existing.setStatus(newStatus);
-        return productRepository.save(existing);
+        Product updatedProduct = productRepository.save(existing);
+        log.info("Product status updated successfully — id: {}, status: {}", id, newStatus);
+        return updatedProduct;
+
     }
 
     @Override
     public Product findById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+                .orElseThrow(() -> {
+                    log.error(PRODUCT_NOT_FOUND, id);
+                    return new ProductNotFoundException(id);
+                });
+
     }
 
     @Override
     public List<Product> findByClientId(Long clientId) {
+        log.info("Fetching products for clientId: {}", clientId);
         validateClientExists(clientId);
         return productRepository.findByClientId(clientId);
     }
 
     private void validateClientExists(Long clientId) {
         clientRepository.findById(clientId)
-                .orElseThrow(() -> new ClientNotFoundForProductException(clientId));
+                .orElseThrow(() -> {
+                    log.error("Client not found with id: {}", clientId);
+                    return new ClientNotFoundForProductException(clientId);
+                });
+
     }
 
     private void validateStatusTransition(Product product, AccountStatus newStatus) {
         if (product.getStatus() == AccountStatus.CANCELADA) {
+            log.warn("Can't update status. Product is cancelled, id: {}", product.getId());
             throw new InvalidAccountStatusException(newStatus);
         }
 
@@ -69,6 +96,7 @@ public class ProductService implements ProductUseCase {
 
     private void validateZeroBalanceForCancellation(Product product) {
         if (product.getBalance().compareTo(BigDecimal.ZERO) != 0) {
+            log.warn("Can't cancel product. Balance is not zero, id: {}", product.getId());
             throw new AccountCancellationException();
         }
     }

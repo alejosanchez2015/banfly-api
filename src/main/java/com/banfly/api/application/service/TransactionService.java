@@ -15,6 +15,7 @@ import com.banfly.api.domain.transaction.model.Transaction;
 import com.banfly.api.domain.transaction.model.TransactionType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionService implements TransactionUseCase {
 
     private final TransactionRepository transactionRepository;
@@ -32,6 +34,9 @@ public class TransactionService implements TransactionUseCase {
     @Override
     @Transactional
     public Transaction deposit(Transaction transaction) {
+        log.info("Processing deposit. TargetAccountId: {}, amount: {}",
+                transaction.getTargetAccountId(), transaction.getAmount());
+
         Product targetAccount = findActiveProduct(transaction.getTargetAccountId());
 
         targetAccount.setBalance(targetAccount.getBalance().add(transaction.getAmount()));
@@ -39,12 +44,19 @@ public class TransactionService implements TransactionUseCase {
         productRepository.save(targetAccount);
 
         transaction.setTransactionType(TransactionType.DEPOSIT);
-        return transactionRepository.save(transaction);
+        Transaction transactionSaved = transactionRepository.save(transaction);
+        log.info("Deposit processed successfully. TransactionId: {}, newBalance: {}",
+                transactionSaved.getId(), targetAccount.getBalance());
+        return transactionSaved;
+
     }
 
     @Override
     @Transactional
     public Transaction withdrawal(Transaction transaction) {
+        log.info("Processing withdrawal. SourceAccountId: {}, amount: {}",
+                transaction.getSourceAccountId(), transaction.getAmount());
+
         Product sourceAccount = findActiveProduct(transaction.getSourceAccountId());
 
         validateSufficientBalance(sourceAccount, transaction.getAmount());
@@ -55,12 +67,21 @@ public class TransactionService implements TransactionUseCase {
         productRepository.save(sourceAccount);
 
         transaction.setTransactionType(TransactionType.WITHDRAWAL);
-        return transactionRepository.save(transaction);
+        Transaction withdrawalSaved = transactionRepository.save(transaction);
+        log.info("Withdrawal processed successfully. TransactionId: {}, newBalance: {}",
+                withdrawalSaved.getId(), sourceAccount.getBalance());
+        return withdrawalSaved;
+
     }
 
     @Override
     @Transactional
     public Transaction transfer(Transaction transaction) {
+        log.info("Processing transfer. SourceAccountId: {}, targetAccountId: {}, amount: {}",
+                transaction.getSourceAccountId(),
+                transaction.getTargetAccountId(),
+                transaction.getAmount());
+
         validateDifferentAccounts(transaction);
 
         Product sourceAccount = findActiveProduct(transaction.getSourceAccountId());
@@ -80,11 +101,15 @@ public class TransactionService implements TransactionUseCase {
         productRepository.save(targetAccount);
 
         transaction.setTransactionType(TransactionType.TRANSFER);
-        return transactionRepository.save(transaction);
+        Transaction transferSaved = transactionRepository.save(transaction);
+        log.info("Transfer processed successfully. TransactionId: {}", transferSaved.getId());
+        return transferSaved;
+
     }
 
     @Override
     public List<Transaction> findByAccountId(Long accountId) {
+        log.info("Fetching transactions for accountId: {}", accountId);
         findActiveProduct(accountId);
         List<Transaction> deposits = transactionRepository.findByTargetAccountId(accountId);
         List<Transaction> withdrawals = transactionRepository.findBySourceAccountId(accountId);
@@ -96,9 +121,13 @@ public class TransactionService implements TransactionUseCase {
 
     private Product findActiveProduct(Long accountId) {
         Product product = productRepository.findById(accountId)
-                .orElseThrow(() -> new ProductNotFoundException(accountId));
+                .orElseThrow(() -> {
+                    log.error("Account not found with id: {}", accountId);
+                    return new ProductNotFoundException(accountId);
+                });
 
         if (product.getStatus() != AccountStatus.ACTIVA) {
+            log.warn("Transaction rejected. Account is not active, accountId: {}", accountId);
             throw new InactiveAccountException(product.getAccountNumber());
         }
 
@@ -107,6 +136,7 @@ public class TransactionService implements TransactionUseCase {
 
     private void validateSufficientBalance(Product account, BigDecimal amount) {
         if (account.getBalance().compareTo(amount) < 0) {
+            log.warn("Transaction rejected. insufficient balance, accountId: {}", account.getId());
             throw new InsufficientBalanceException(account.getAccountNumber());
         }
     }
@@ -115,6 +145,7 @@ public class TransactionService implements TransactionUseCase {
         if (account.getAccountType() == AccountType.AHORROS) {
             BigDecimal resultingBalance = account.getBalance().subtract(amount);
             if (resultingBalance.compareTo(BigDecimal.ZERO) < 0) {
+                log.warn("Transaction rejected. Savings account would have negative balance, accountId: {}", account.getId());
                 throw new NegativeBalanceException();
             }
         }
@@ -122,6 +153,7 @@ public class TransactionService implements TransactionUseCase {
 
     private void validateDifferentAccounts(Transaction transaction) {
         if (transaction.getSourceAccountId().equals(transaction.getTargetAccountId())) {
+            log.warn("Transfer rejected. Source and target accounts are the same, accountId: {}", transaction.getSourceAccountId());
             throw new SameAccountTransferException();
         }
     }
